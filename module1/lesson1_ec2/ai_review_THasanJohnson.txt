@@ -1,0 +1,176 @@
+SEIR Foundations — Lesson 1 AI Review
+Student: T. Hasan Johnson
+AI Used: ChatGPT
+Assignment: Lesson 1 EC2 Runbook Review
+
+AI Conversation Link: [https://chatgpt.com/share/6ae43ad4-5094-83e8-bf6c-adc12a429c48]
+QUESTION 1: Why does the Lesson 1 application use port 8000?
+
+My question to AI:
+Why does the Lesson 1 FastAPI application use port 8000, and what must I configure in AWS to access it?
+
+AI's answer in my own words:
+The application uses port 8000 because the Uvicorn web server is configured to listen for requests on that port. The AWS security group acts as a firewall that determines which incoming connections are permitted. To access the application from my browser, I need an inbound security group rule permitting TCP traffic on port 8000 from an appropriate source.
+
+How I checked it:
+I reviewed the Lesson 1 runbook and started the FastAPI application using this command:
+
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+I verified that Uvicorn reported successful application startup. I then opened a second EC2 Instance Connect terminal and tested the application using:
+
+curl http://127.0.0.1:8000/status
+
+I also used the AWS EC2 console to check that my instance's security group allowed inbound traffic on TCP port 8000. Finally, I entered the instance's public IPv4 address followed by :8000 in my browser and successfully accessed the application.
+
+Result:
+The AI's explanation was correct. I verified that the application listened on port 8000 and that the security group configuration permitted external access. I also learned that a successful local curl test does not, by itself, prove that the application is accessible from outside the EC2 instance.
+QUESTION 2: What do the COBOL return codes mean, and how can I verify them?
+
+My question to AI:
+What do return codes 0, 4, 8, and 12 mean in the Balerica Legacy Bank application, and how can I verify that the COBOL programs return the correct codes?
+
+AI's answer in my own words:
+The application uses return codes to indicate the outcome of an operation. Return code 0 means success, 4 indicates a warning, 8 indicates a business-rule rejection, and 12 indicates an environment or system failure. These codes help distinguish successful transactions from expected business problems and technical failures.
+
+How I checked it:
+I reviewed the Lesson 1 runbook and used the COBOL programs in the /opt/balerica-bank directory to test account lookups and payment processing.
+
+For example, I ran:
+
+./cobol/bin/account_lookup 100001
+echo "Return code: $?"
+
+I also tested a nonexistent account:
+
+./cobol/bin/account_lookup 999999
+echo "Return code: $?"
+
+For payment processing, I used:
+
+./cobol/bin/payment_post TXN0001 100001 125.50 USD INV-1001
+echo "Return code: $?"
+
+The echo command displayed the exit status of the preceding COBOL program. I compared the observed results with the return-code definitions in the runbook and captured supporting screenshots named cobol_rc0.jpg, cobol_rc4.jpg, cobol_rc8.jpg, and cobol_rc12.jpg.
+
+Result:
+I verified the return-code behavior through terminal tests and saved screenshots. This helped me understand that COBOL return codes describe different types of outcomes rather than simply reporting whether a program ran. I also learned that checking the actual exit status is more reliable than assuming a command succeeded because it produced output.
+QUESTION 3: What does the SWIFT traffic generator do, and how can I verify its results?
+
+My question to AI:
+What is the purpose of the SWIFT traffic generator in the Balerica Legacy Bank application, and how can I determine whether transactions were successfully processed?
+
+AI's answer in my own words:
+The SWIFT traffic generator simulates financial transaction requests sent to the banking application. It helps test how the system processes transactions and handles business-rule rejections. The output separates successfully posted transactions from rejected transactions and processing failures. This allows me to evaluate the application's behavior under simulated transaction activity.
+
+How I checked it:
+I reviewed the Lesson 1 runbook and started the FastAPI application using Uvicorn in my first EC2 terminal. I opened a second EC2 Instance Connect terminal, activated the Python virtual environment, and ran the following commands:
+
+cd /opt/balerica-bank
+source venv/bin/activate
+python3 swift/traffic_generator.py --count 10
+
+I examined the traffic generator's output and compared the number of transactions sent with the numbers posted, rejected, and failed.
+
+During Run 1, the output reported 10 transactions sent, 6 posted, 4 rejected, and 0 failed.
+
+During Run 2, the output reported 10 transactions sent, 7 posted, 3 rejected, and 0 failed.
+
+During Run 3, the output reported 10 transactions sent, 6 posted, 4 rejected, and 0 failed.
+
+For each run, the posted, rejected, and failed counts added up to the total number of transactions sent. I also saved a screenshot named swift_traffic_run1.jpg as supporting evidence.
+
+Result:
+The test results supported the AI's explanation. The application processed all 10 requests in each run, with some transactions posted and others rejected according to the application's business rules. The rejected transactions did not necessarily indicate a technical failure because the generator separately reported zero failed transactions. I learned that checking the transaction totals and their categories provides stronger evidence than simply observing that the traffic generator completed.
+QUESTION 4: How can I verify that the FastAPI application is functioning correctly?
+
+My question to AI:
+How can I determine whether the Balerica Legacy Bank FastAPI application is functioning correctly, and what is the purpose of testing its endpoints?
+
+AI's answer in my own words:
+FastAPI provides different endpoints that allow users and other programs to interact with the banking application. Each endpoint performs a particular function, such as reporting application status, retrieving account information, or answering questions through the AI helper. Successfully starting Uvicorn means the server has launched, but it does not prove that every application feature works. Testing the endpoints provides additional evidence that the application is operating correctly.
+
+How I checked it:
+I reviewed the Lesson 1 runbook and started the application in my first EC2 terminal using:
+
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+After confirming that Uvicorn reported successful startup, I opened a second EC2 Instance Connect terminal and ran:
+
+curl http://127.0.0.1:8000/status
+
+curl http://127.0.0.1:8000/chewbacca
+
+I examined the responses to confirm that the application was reachable and returned the expected information.
+
+I then tested the account lookup endpoint using my EC2 instance's public IPv4 address in a browser:
+
+http://PUBLIC_IP:8000/accounts/100001
+
+I replaced PUBLIC_IP with the actual public IPv4 address of my running instance.
+
+Finally, I tested the AI helper endpoint using:
+
+curl -s -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d '{"question":"What does return code 8 mean?"}'
+
+During Runs 2 and 3, I received responses from these endpoints and compared their behavior with the Lesson 1 runbook.
+
+Result:
+The endpoint tests supported the AI's explanation. I confirmed that the server could respond to status requests, provide account information, and process a question through the AI helper. I learned that application startup is only one part of verification. Testing individual endpoints provides stronger evidence that the application's different components are functioning.
+QUESTION 4: Did we skip Steps 7 and 8 of the Lesson 1 runbook?
+
+My actual question to AI:
+"Did we skip steps 7 & 8?"
+
+AI's answer in my own words:
+The AI acknowledged that its earlier instructions had omitted two required runbook steps. Step 7 involved testing the account lookup endpoint, while Step 8 involved testing the AI helper endpoint. The AI explained that these checks were necessary to verify application functionality beyond simply starting the server and generating transactions.
+
+How I checked it:
+I compared the AI's instructions with the original Balerica Legacy Bank Lesson 1 runbook on GitHub. I discovered that the instructions I had followed did not cover every required step. Because my first EC2 instance had already been terminated, I could not return to that same instance to complete the missing tests.
+
+During subsequent runs, I corrected the omission by testing the account lookup endpoint:
+
+http://PUBLIC_IP:8000/accounts/100001
+
+I also tested the AI helper using:
+
+curl -s -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d '{"question":"What does return code 8 mean?"}'
+
+I compared the responses with the runbook's requirements and confirmed that these tests were completed during Runs 2 and 3.
+
+Where AI was wrong or incomplete:
+The AI initially guided me through the lab without including every required runbook step. This was an important omission because following the instructions alone would not have completed the full assignment.
+
+Result:
+I learned that AI-generated instructions should be checked against the original assignment rather than accepted as complete. By identifying the missing steps and performing the tests during subsequent runs, I was able to correct the problem and verify the application's additional functions.
+QUESTION 5: When do I use :8000 in the URL?
+
+My actual question to AI:
+"When do I use :8000 in the URL?"
+
+AI's answer in my own words:
+The number 8000 identifies the network port where the Balerica Legacy Bank FastAPI application is listening. When accessing the application through a web browser, I need to include :8000 after the EC2 instance's public IPv4 address because the application is not using the browser's default HTTP port 80. When testing the application directly inside the EC2 instance, I can use 127.0.0.1:8000 instead of the public IP address. The AWS security group must also permit inbound traffic on port 8000 for external browser access.
+
+How I checked it:
+I reviewed the Lesson 1 runbook and examined the command used to start the application:
+
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+This confirmed that Uvicorn was configured to listen on port 8000.
+
+Next, I opened a second EC2 Instance Connect terminal and tested the application's status endpoint:
+
+curl http://127.0.0.1:8000/status
+
+I verified that the application returned a response.
+
+I also checked the instance's security group in the AWS EC2 console to confirm that an inbound TCP rule permitted access to port 8000.
+
+Finally, I entered the following URL in my computer's browser, replacing PUBLIC_IP with the instance's actual public IPv4 address:
+
+http://PUBLIC_IP:8000/accounts/100001
+
+The account endpoint responded successfully during Runs 2 and 3.
+
+Result:
+I confirmed that :8000 is necessary when connecting directly to this application because Uvicorn listens on port 8000. I also learned the difference between accessing a service locally through 127.0.0.1 and accessing it externally through an EC2 public IP address. The tests helped me understand how the application's listening port, AWS security group, and browser URL work together.
