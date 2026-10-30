@@ -89,7 +89,7 @@ Evidence: `Screenshots/swift_traffic_run1.jpg`
 - Public DNS: ec2-52-15-54-249.us-east-2.compute.amazonaws.com
 - Boot time (UTC): 2026-10-29 09:33:09
 - Screenshot: Screenshots/lab1_run2.jpg
-- Screenshot time (PDT): [enter actual screenshot time]
+- Screenshot time (PDT): [Oct 29 03:44:34 PDT 2026]
 - Runbook: Steps 0–9 completed
 - SWIFT traffic: 10 sent, 7 posted, 3 rejected, 0 failed
 - API tests: /status, /chewbacca, /accounts/100001, /ask passed
@@ -107,7 +107,7 @@ Evidence: `Screenshots/swift_traffic_run1.jpg`
 - Public DNS: ec2-3-17-173-95.us-east-2.compute.amazonaws.com
 - Boot time (UTC): 2026-10-29 11:52:52
 - Screenshot: Screenshots/lab1_run3.jpg
-- Screenshot time (PDT): [enter time shown in saved screenshot]
+- Screenshot time (PDT): [Oct 29 05:14:01 PDT 2026]
 - Runbook: Steps 0–9 completed
 - SWIFT traffic: 10 sent, 6 posted, 4 rejected, 0 failed
 - API tests: /status, /chewbacca, /accounts/100001, /ask passed
