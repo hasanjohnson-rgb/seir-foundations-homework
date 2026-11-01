@@ -3,21 +3,28 @@ SEIR Foundations — Week 3
 Spotter Assignment
 
 Student: T. Hasan Johnson
-Partner: mlxworld
+Partner: John Walker, MJ Bass
 Group: SkyNet
 
-SECTION 1 — FIVE THINGS I LEARNED FROM MY PARTNER (mlxworld)
+SECTION 1 — FIVE THINGS I LEARNED FROM MY PARTNER (John Walker)
 
-1.
-2.
-3.
-4.
-5.
+1. I learned some commands in COBOL including how to run it, add a new entry in it, and look up accounts.
+2, I learned how to start a web server via the uvicorn command
+3. I learned that it is important to review the output of the commands I run as sometimes it will give me suggestions on what to do next (referring to when it said I should update pip).
+4. I learned that because I authenticate to GitHub via my google account (which means my GitHub account doesn't have a 'password'), I couldn't complete the homework as it was written. I googled 'how to clone GitHub to an ec2 when your account is linked via google' and it told me that I could not use my Google password to authenticate Git operations on an EC2 instance. I could do it via SSH Keys or a Personal Access Token (PAT). It recommended using a SSH key.
+5. I learned how to generate a SSH key on my EC2 instance and then use that to authenticate myself. as mentioned above, I followed the instructions (below) on how to generate a SSH key and use that to clone my GitHub repository to the EC2. Took some back and forth and I got it to work successfully. Instructions below.
+
+MJ Bass
+1: I learned some examples of how information is organized in a COBOL based server. 
+2: I learned that I could clone git repositories by using the <git clone url> command. 
+3: I learned that there are various commands to confirm if my commands are working, for example <echo>, <ls>, and <pwd>. 
+4: I learned that APIs are ways that back end programming can translate to touchscreen interfaces. 
+5: I learned that we should focus on one instance at a time to avoid confusion when downloading software.
 
 SECTION 2 — FIVE THINGS MY PARTNER LEARNED FROM ME
 
-1.
-2.
-3.
-4.
-5.
+1. I learned how to launch, configure, manage, and terminate AWS EC2 instances while monitoring costs.
+2. I learned how to automate server deployments using User Data scripts, launch templates, and Golden AMIs.
+3. I learned how to integrate artificial intelligence into cloud applications using Amazon Bedrock, Claude AI models, and inference profiles.
+4. I learned how to configure IAM roles and security policies to give applications secure access to AWS services without using permanent access keys.
+5. I learned how to troubleshoot Linux and Python applications using terminal commands, environment variables, API testing, and error messages to identify and resolve technical problems.
