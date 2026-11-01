@@ -362,3 +362,71 @@ echo "=== COBOL ACCOUNT LOOKUP ==="
 echo "=== BAM 2.2 INSTALLATION SUCCESS ==="
 echo "Installation complete."
 ```
+## BAM 2.3 — Golden AMI Deployment
+
+**Objective:** Create a reusable Amazon Machine Image (AMI) containing the fully installed Balerica Legacy Bank application, then launch a new EC2 instance that operates without reinstalling the software.
+
+### AWS Configuration
+
+- **Region:** us-east-2 (Ohio)
+- **Operating System:** Amazon Linux 2023
+- **Instance Type:** t3.micro
+- **Golden AMI Name:** seir-bam-2-3-golden-ami
+- **AMI ID:** ami-08c726ae83c031264
+- **EBS Snapshot ID:** snap-07d7de06f6bc6bfbe
+- **Source EC2 Instance ID:** i-005521fdf2b52b9c6
+- **AMI-Launched EC2 Instance ID:** i-0a30c2367f7658cc2
+
+### Deployment Process
+
+I created a Golden AMI from the successfully configured BAM 2.2 EC2 instance, which already contained the Balerica Legacy Bank application, COBOL programs, database, Python virtual environment, and supporting files.
+
+I launched a new EC2 instance directly from the Golden AMI without using an installation script or executing User Data.
+
+### Verification
+
+The new EC2 instance successfully passed its AWS status checks.
+
+I verified that `/opt/balerica-bank` contained the existing application directories and that the database file `data/accounts.dat` was present.
+
+The COBOL account lookup returned:
+
+```text
+ACCOUNT=100001
+NAME=Alice Johnson
+STATUS=ACTIVE
+BALANCE=5000.00
+CURRENCY=USD
+```
+
+I started the application directly from the preinstalled Python virtual environment:
+
+```bash
+cd /opt/balerica-bank
+./venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+The terminal confirmed:
+
+```text
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000
+```
+
+A local HTTP request to `http://127.0.0.1:8000/` returned the Balerica Legacy Bank homepage, showing that FastAPI was ONLINE.
+
+### Troubleshooting
+
+The initial COBOL lookup returned `FILE-STATUS=35` because the command was executed from `/root`, rather than the application's working directory. Changing to `/opt/balerica-bank` resolved the error.
+
+No software installation, repository cloning, or dependency installation was necessary.
+
+### Evidence
+
+`Screenshots/BAM_2.3.jpg`
+
+The screenshot includes the required identification line, the running API response, and the successful COBOL account lookup.
+
+### Cleanup
+
+After confirming the GitHub submission, terminate the temporary EC2 instances, deregister the Golden AMI, delete its associated EBS snapshot, and verify that no unnecessary EBS volumes or Elastic IP addresses remain.
