@@ -281,3 +281,84 @@ I learned that Uvicorn occupies the terminal while running in the foreground, so
 I also learned to record the instance ID, Pacific date and time, and boot time immediately before starting Uvicorn. This helps establish that each deployment used a distinct EC2 instance.
 
 Finally, I learned to terminate unused instances and check for leftover EBS volumes and Elastic IP addresses to avoid unnecessary AWS charges.
+
+## BAM 2.2 — Automated EC2 Installation
+
+**Objective:** Automate the installation of Balerica Legacy Bank using an EC2 launch template and User Data script.
+
+### AWS Configuration
+
+- **Region:** us-east-2 (Ohio)
+- **Operating System:** Amazon Linux 2023
+- **Instance Type:** t3.micro
+- **Launch Template:** seir-bam-2-2-auto-install
+- **Launch Template ID:** lt-0ba652473d890a704
+- **Successful Template Version:** 2
+- **EC2 Instance ID:** i-005521fdf2b52b9c6
+- **Security Group:** seir-foundations-sg
+
+### Automated Installation
+
+The launch template's User Data script automatically cloned the BalericaAI SEIR-Foundations repository and executed the Balerica Bank installation script during EC2 startup.
+
+The installation successfully created the database, installed the required Python dependencies, compiled the COBOL programs, and exported three accounts into the ledger.
+
+### Verification
+
+The `/var/log/cloud-init-output.log` file confirmed:
+
+- `Installation complete.`
+- `=== BAM 2.2 INSTALLATION SUCCESS ===`
+- Successful COBOL account lookup for account 100001
+- Account holder: Alice Johnson
+- Account status: ACTIVE
+- Account balance: 5000.00 USD
+
+The automated installation completed without manually executing the installer.
+
+### Troubleshooting
+
+Launch template version 1 failed because an extra blank line appeared before the `#!/bin/bash` interpreter directive in User Data. The formatting was corrected in version 2, and a new EC2 instance completed the automated installation successfully.
+
+### Evidence
+
+`Screenshots/BAM_2.2.jpg`
+
+The screenshot includes the required identification command, installation success messages, and working COBOL account lookup.
+
+### Final User Data Script
+
+```bash
+#!/bin/bash
+set -Eeuo pipefail
+
+exec > >(tee -a /var/log/bam-2-2-install.log) 2>&1
+
+echo "=== BAM 2.2 AUTOMATED INSTALLATION ==="
+date -u
+
+echo "Installing Git..."
+dnf install -y git
+
+echo "Cloning SEIR Foundations repository..."
+sudo -u ec2-user bash <<'INSTALL'
+set -Eeuo pipefail
+cd /home/ec2-user
+git clone https://github.com/BalericaAI/SEIR-Foundations.git
+cd SEIR-Foundations/module1/lesson1_ec2/API
+
+echo "Running Balerica Bank installer..."
+bash install/install.sh
+INSTALL
+
+echo "Checking installed application..."
+test -x /opt/balerica-bank/cobol/bin/account_lookup
+
+cd /opt/balerica-bank
+
+echo "=== COBOL ACCOUNT LOOKUP ==="
+./cobol/bin/account_lookup 100001
+
+echo "=== BAM 2.2 INSTALLATION SUCCESS ==="
+echo "Installation complete."
+```
