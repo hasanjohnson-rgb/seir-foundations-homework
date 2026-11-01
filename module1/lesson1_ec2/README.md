@@ -37,6 +37,29 @@ This lab demonstrates how to deploy a FastAPI application backed by a GnuCOBOL b
 | 8 | Attempt payment exceeding available funds | Rejected: insufficient funds | `Screenshots/cobol_rc8.jpg` |
 | 12 | Run payment command without required arguments | Rejected: malformed request | `Screenshots/cobol_rc12.jpg` |
 
+
+### Additional COBOL Transaction Journal Verification
+
+On October 31, 2026, I used a separate temporary EC2 instance (`i-0ae2faee0ef2700f9`) to verify a successful payment and inspect the transaction journal.
+
+| Item | Verified Result |
+|---|---|
+| Transaction ID | `TXN-THJ-0003` |
+| Account | `100001` — Alice Johnson |
+| Payment amount | $125.50 |
+| Payment status | `POSTED` |
+| Return code | 0 |
+| Journal file | `data/payments.dat` |
+| Balance before payment | $5,000.00 |
+| Balance after payment | $5,000.00 |
+| Observed balance change | $0.00 |
+
+The transaction was recorded in the payment journal, but the subsequent account lookup continued to report $5,000.00. The reason for the unchanged balance was not established during this verification.
+
+**Evidence:** `Screenshots/cobol_transaction_journal.jpg`
+
+This verification instance was separate from the seven EC2 deployments required for the lab.
+
 ## Fixed-Width Ledger
 
 The ledger file is located at `data/accounts.dat`.

@@ -155,6 +155,63 @@ I did not preserve the individual COBOL transaction journal entries, transaction
 
 The exercise helped me understand the importance of recording transaction identifiers, payment amounts, return codes, and account balances when testing financial applications.
 
+
+### Successful Payment and Journal Verification — October 31, 2026
+
+I launched a separate temporary EC2 instance to complete the COBOL transaction journal verification without altering my seven original deployment records.
+
+**Verification instance:** `i-0ae2faee0ef2700f9`  
+**Region:** `us-east-2`  
+**Evidence time:** October 31, 2026, 8:48:45 PM PDT  
+**Application directory:** `/opt/balerica-bank`
+
+I first used `./cobol/bin/account_lookup 100001` to verify that Alice Johnson's account had a starting balance of $5,000.00. The lookup returned code 0.
+
+I then executed:
+
+`./cobol/bin/payment_post TXN-THJ-0003 100001 125.50 USD INV-1003; echo "RETURN_CODE=$?"`
+
+The payment returned `STATUS=POSTED`, `REASON=APPROVED`, and `RETURN_CODE=0`.
+
+I inspected the transaction journal using:
+
+`cat data/payments.dat`
+
+The journal contained the following record:
+
+`TXN-THJ-0003        100001000000012550USDPOSTED  INV-1003`
+
+This confirmed that the $125.50 payment was recorded as posted.
+
+I subsequently repeated the account lookup for account `100001`. The reported balance remained $5,000.00, producing an observed balance change of $0.00.
+
+Although the payment was recorded as posted, the account lookup did not reflect a debit. I documented this discrepancy rather than assuming that the balance decreased. Further examination of the application would be required to determine why the account balance remained unchanged.
+
+**Evidence:** `Screenshots/cobol_transaction_journal.jpg`
+
+
+### Explanation of the Unchanged Account Balance
+
+I investigated why Alice Johnson's balance remained $5,000.00 after the $125.50 payment was approved. I inspected the COBOL source file using `grep` and `sed`, focusing on the payment-validation and journal-writing sections.
+
+The code compares the requested payment amount with the available account balance. When the payment satisfies the validation rules, it assigns `POSTED` and `APPROVED`, then writes the transaction to `data/payments.dat`.
+
+The inspected code does not contain an instruction to subtract the payment amount from the account balance or update `data/accounts.dat`. This is consistent with the observed behavior: the payment was recorded in the journal, but the subsequent account lookup still returned $5,000.00.
+
+This exercise helped me distinguish between validating and recording a financial transaction and actually updating an account's stored balance.
+
+### Verified COBOL Transaction Attempts
+
+I used transaction IDs beginning with my initials, THJ.
+
+- `TXN-THJ-0001`: Attempted to post $9,999.00 from account `100001`. The COBOL program returned `STATUS=REJECTED`, `REASON=INSUFFICIENT FUNDS`, and exit code 8.
+- `TXN-THJ-0002`: Attempted to post an invalid amount (`ABC`) from account `100001`. The program returned `STATUS=REJECTED`, `REASON=AMOUNT MUST BE GREATER THAN ZERO`, and exit code 8.
+
+Both transactions were rejected. Neither was confirmed as posted. The screenshot does not show the transaction journal file or a subsequent account lookup, so I cannot independently verify journal entries or the final account balance.
+
+Evidence: `Screenshots/cobol_rc12.jpg`
+
+
 ## Mistakes I Made
 
 During the seven EC2 deployments, I encountered several problems that improved my understanding of Linux, AWS, and application deployment.
