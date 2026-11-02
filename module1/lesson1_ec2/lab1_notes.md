@@ -282,6 +282,59 @@ I also learned to record the instance ID, Pacific date and time, and boot time i
 
 Finally, I learned to terminate unused instances and check for leftover EBS volumes and Elastic IP addresses to avoid unnecessary AWS charges.
 
+## BAM 2.1 — Amazon Bedrock Integration
+
+### AWS Configuration
+
+- **AWS Region:** us-east-2 (Ohio)
+- **EC2 Instance ID:** i-04bab1af3b87e7538
+- **Operating System:** Amazon Linux 2023
+- **IAM Instance Role:** SEIR-BAM-2-1-Bedrock-Role
+- **AI Service:** Amazon Bedrock
+- **Model:** Amazon Nova Micro
+- **Inference Profile ID:** `us.amazon.nova-micro-v1:0`
+- **Application:** Balerica Legacy Bank (FastAPI)
+- **API Endpoint:** `POST /ask`
+
+### Integration Summary
+
+Configured the EC2 instance with an IAM role granting Amazon Bedrock model invocation permissions. Updated the Balerica AI agent to use the Amazon Bedrock Converse API with Amazon Nova Micro.
+
+Started the FastAPI application on port 8000 and verified that the `/ask` endpoint successfully returned an AI-generated response using information retrieved from the bank's live ledger.
+
+### Verification Question
+
+According to the live bank ledger, what is the balance and status of account 100001?
+
+### Actual API Response
+
+```json
+{
+  "question": "According to the live bank ledger, what is the balance and status of account 100001?",
+  "response": "The balance for account 100001 (Alice Johnson) is $5000.00 USD, and the status is ACTIVE. Return code: 0 ok.",
+  "source": "amazon-bedrock"
+}
+```
+
+### Verification Results
+
+- Account: 100001
+- Account holder: Alice Johnson
+- Balance: $5,000.00 USD
+- Status: ACTIVE
+- Response source: `amazon-bedrock`
+- Result: Successful Amazon Bedrock integration; offline fallback was not used.
+
+### Model Substitution
+
+The assignment's original Claude model configuration could not be invoked because AWS Marketplace returned an `INVALID_PAYMENT_INSTRUMENT` error. Amazon Nova Micro was used as an alternative Amazon Bedrock model. The substitute model successfully processed the bank ledger question through the FastAPI endpoint. Instructor approval may be required if the assignment mandates Claude specifically.
+
+### Screenshot Evidence
+
+`Screenshots/BAM_2.1.jpg`
+
+The screenshot documents the successful Bedrock response, API endpoint verification, EC2 instance identification, and timestamp.
+
 ## BAM 2.2 — Automated EC2 Installation
 
 **Objective:** Automate the installation of Balerica Legacy Bank using an EC2 launch template and User Data script.
