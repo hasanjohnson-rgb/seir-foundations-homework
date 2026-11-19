@@ -27,6 +27,18 @@ I tested duplicate incident prevention by calling `report_incident()` twice with
 
 **Unplanned Work:** To be recorded after the sprint.
 
+## Claude Code Review and Troubleshooting
+
+I used Claude Code on my AWS EC2 instance to review the existing Balerica Bank Jira–Slack integration. Claude examined incident.py, jira.py, and slack.py and explained how incident reporting, Jira ticket creation, Slack notifications, and duplicate prevention work together.
+
+Claude identified a database-path issue in incident.py. The original relative path could cause monitoring agents launched from another directory to use a different incident database. After evaluating the recommendation, I approved a minimal correction that resolves the database path relative to the project directory.
+
+Claude backed up incident.py before editing it. Verification included a Python syntax check, path-resolution checks from /tmp, and a duplicate-prevention test using simulated Jira and Slack functions. The checks passed, and the original incident database remained unchanged. No real Jira tickets or Slack notifications were generated during verification.
+
+Claude also explained an earlier ModuleNotFoundError involving dotenv, which was resolved by activating the project's Python virtual environment.
+
+Evidence: Lesson3_Claude_Code_Review.png and Lesson3_Claude_Code_Fix_Verification.png.
+
 ### Sprint Reflection
 
 To be completed after tracking my daily activities and reviewing the final sprint report.
